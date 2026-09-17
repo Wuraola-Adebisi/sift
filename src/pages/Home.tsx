@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   ArrowRight,
   Check,
@@ -7,31 +8,21 @@ import {
   SlidersHorizontal,
   Sparkles,
 } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { categories as researchCategories, type Verdict } from '../data/researchCatalog'
 
-const products = [
-  {
-    name: 'Sony WH-1000XM6',
-    category: 'Headphones',
-    price: '$399',
-    match: '94%',
-  },
-  {
-    name: 'Bose QuietComfort Ultra',
-    category: 'Headphones',
-    price: '$349',
-    match: '89%',
-  },
-  {
-    name: 'AirPods Max',
-    category: 'Headphones',
-    price: '$549',
-    match: '81%',
-  },
-]
+const headphonesCategory = researchCategories.find((c) => c.id === 'headphones')!
+const teaserProducts = headphonesCategory.results
 
-const categories = [
+const verdictBadge: Record<Verdict, string> = {
+  Buy: 'bg-[#101110]/10',
+  Consider: 'bg-[#f5c945]/90 text-[#101110]',
+  Skip: 'bg-[var(--surface-light)] text-[var(--subtle)]',
+}
+
+const categoryChips = [
   'Jewelry',
   'Skincare',
   'Furniture',
@@ -92,6 +83,14 @@ const comparisonRows = [
 ]
 
 export default function Home() {
+  const [brief, setBrief] = useState('')
+  const navigate = useNavigate()
+
+  const handleSubmit = () => {
+    if (!brief.trim()) return
+    navigate('/research', { state: { brief } })
+  }
+
   return (
     <div className="min-h-screen overflow-hidden bg-[var(--background)]">
       <Header />
@@ -124,7 +123,7 @@ export default function Home() {
               </p>
 
               <div className="mt-8 flex flex-wrap gap-2">
-                {categories.map((item) => (
+                {categoryChips.map((item) => (
                   <span
                     key={item}
                     className="rounded-full bg-[var(--surface)] px-4 py-2 text-xs text-[var(--muted)]"
@@ -156,7 +155,14 @@ export default function Home() {
                     </div>
                   </div>
 
+                  <label htmlFor="home-brief" className="sr-only">
+                    What are you looking for?
+                  </label>
+
                   <textarea
+                    id="home-brief"
+                    value={brief}
+                    onChange={(event) => setBrief(event.target.value)}
                     rows={6}
                     placeholder="I need a gold necklace for everyday wear. Something simple but not boring. Around $300."
                     className="w-full resize-none rounded-2xl border border-[var(--border)] bg-[var(--background)] p-5 text-sm leading-6 text-[var(--foreground)] outline-none placeholder:text-[var(--subtle)] focus:border-[var(--accent)]"
@@ -164,7 +170,9 @@ export default function Home() {
 
                   <button
                     type="button"
-                    className="group mt-4 flex w-full items-center justify-between rounded-2xl bg-[var(--accent)] px-5 py-4 text-sm font-bold text-[#101110] transition hover:bg-[var(--accent-dark)]"
+                    onClick={handleSubmit}
+                    disabled={!brief.trim()}
+                    className="group mt-4 flex w-full items-center justify-between rounded-2xl bg-[var(--accent)] px-5 py-4 text-sm font-bold text-[#101110] transition hover:bg-[var(--accent-dark)] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Find my shortlist
 
@@ -209,7 +217,7 @@ export default function Home() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
-              {products.map((product, index) => (
+              {teaserProducts.map((product, index) => (
                 <article
                   key={product.name}
                   className={`min-h-[380px] rounded-[28px] p-7 md:p-8 ${
@@ -226,17 +234,15 @@ export default function Home() {
                           : 'text-[var(--subtle)]'
                       }`}
                     >
-                      0{index + 1}
+                      {product.rank}
                     </span>
 
                     <span
-                      className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                        index === 0
-                          ? 'bg-[#101110]/10'
-                          : 'bg-[var(--surface-light)]'
+                      className={`rounded-full px-3 py-1.5 text-xs font-bold ${
+                        verdictBadge[product.verdict]
                       }`}
                     >
-                      {product.match} match
+                      {product.verdict}
                     </span>
                   </div>
 
@@ -260,9 +266,14 @@ export default function Home() {
                         {product.price}
                       </span>
 
-                      <span className="flex items-center gap-1.5 text-xs">
-                        <Check size={13} aria-hidden="true" />
-                        Fits your brief
+                      <span
+                        className={`text-xs ${
+                          index === 0
+                            ? 'text-[#101110]/70'
+                            : 'text-[var(--subtle)]'
+                        }`}
+                      >
+                        {product.specs[0]?.label}: {product.specs[0]?.value}
                       </span>
                     </div>
                   </div>
@@ -398,8 +409,8 @@ export default function Home() {
                     deserve your attention in the first place.
                   </p>
 
-                  <a
-                    href="/research"
+                  <Link
+                    to="/research"
                     className="group mt-9 inline-flex items-center gap-2 rounded-full bg-[#101110] px-5 py-3.5 text-sm font-semibold text-[var(--accent)] transition hover:scale-[1.02]"
                   >
                     Try Sift
@@ -409,7 +420,7 @@ export default function Home() {
                       aria-hidden="true"
                       className="transition-transform group-hover:translate-x-1"
                     />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -431,8 +442,8 @@ export default function Home() {
               gifts, or something you have not figured out how to name yet.
             </p>
 
-            <a
-              href="/research"
+            <Link
+              to="/research"
               className="group mx-auto mt-9 inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-6 py-4 text-sm font-bold text-[#101110] transition hover:bg-[var(--accent-dark)]"
             >
               Start with a search
@@ -442,7 +453,7 @@ export default function Home() {
                 aria-hidden="true"
                 className="transition-transform group-hover:translate-x-1"
               />
-            </a>
+            </Link>
           </div>
         </section>
       </main>

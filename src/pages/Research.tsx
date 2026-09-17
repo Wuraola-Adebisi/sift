@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowRight,
-  Check,
   Clock3,
   Search,
   SlidersHorizontal,
@@ -10,80 +10,86 @@ import {
 } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import {
+  categories,
+  matchCategory,
+  type ResearchCategory,
+  type Verdict,
+} from "../data/researchCatalog";
 
-const examples = [
-  "I need a gold necklace for everyday wear. Something simple but not boring. Around $300.",
-  "I need headphones for commuting. Good noise cancellation matters. Under $400.",
-  "I need a sofa for a small living room. Neutral colour, comfortable, easy to clean, under $1,500.",
-  "I need running shoes for daily road runs. Comfortable and durable. Under $180.",
-];
+const examples = categories.map((category) => category.exampleBrief);
 
-const results = [
-  {
-    rank: "01",
-    name: "14k Solid Gold Pendant",
-    category: "Jewelry",
-    price: "$295",
-    match: "95%",
-    reason:
-      "Fits the budget closely, works for everyday wear, and solid gold makes durability a stronger point.",
-    tradeoff:
-      "Usually offers less visual variety at this price than plated alternatives.",
-  },
-  {
-    rank: "02",
-    name: "Gold Vermeil Chain",
-    category: "Jewelry",
-    price: "$185",
-    match: "89%",
-    reason:
-      "Gives you the gold look at a lower price while keeping the design simple.",
-    tradeoff:
-      "The finish can wear over time, particularly with frequent exposure to water and products.",
-  },
-  {
-    rank: "03",
-    name: "Gold-Plated Pendant",
-    category: "Jewelry",
-    price: "$95",
-    match: "77%",
-    reason:
-      "Leaves substantial room in the budget and offers a wide range of styles.",
-    tradeoff: "Less durable for the everyday-wear requirement.",
-  },
-];
+type Status = "idle" | "loading" | "results" | "no-match";
 
-const criteria = [
-  { label: "Use case", value: "Everyday wear" },
-  { label: "Budget", value: "Around $300" },
-  { label: "Priority", value: "Durability" },
-  { label: "Style", value: "Simple but distinctive" },
-];
+const verdictBadge: Record<Verdict, string> = {
+  Buy: "bg-[var(--accent)] text-[#101110]",
+  Consider: "bg-[#f5c945] text-[#101110]",
+  Skip: "bg-[#f2795c]/15 text-[#f2795c]",
+};
+
+const verdictBorder: Record<Verdict, string> = {
+  Buy: "border-l-[var(--accent)]",
+  Consider: "border-l-[#f5c945]",
+  Skip: "border-l-[#f2795c]",
+};
 
 export default function Research() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [brief, setBrief] = useState("");
-  const [hasResults, setHasResults] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
+  const [category, setCategory] = useState<ResearchCategory | null>(null);
+  const hasHandledIncomingBrief = useRef(false);
 
-  const handleSearch = () => {
-    if (!brief.trim()) return;
-    setHasResults(true);
-  };
+  // A brief can arrive from the homepage's own search box via router state.
+  // Run it once on mount, then clear the state so back/refresh doesn't
+  // re-trigger it.
+  useEffect(() => {
+    if (hasHandledIncomingBrief.current) return;
+    hasHandledIncomingBrief.current = true;
 
-  const handleExample = (example: string) => {
-    setBrief(example);
-    setHasResults(false);
-  };
+    const incoming = (location.state as { brief?: string } | null)?.brief;
+    if (incoming) {
+      runSearch(incoming);
+      navigate(location.pathname, { replace: true, state: null });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function runSearch(text: string) {
+    if (!text.trim()) return;
+
+    setBrief(text);
+    setStatus("loading");
+
+    // Stands in for the AI requirement-extraction + research step. There's
+    // no model behind this yet, so this is a fixed delay against a
+    // controlled dataset (see src/data/researchCatalog.ts) rather than a
+    // real query — but the UI flow is exactly what a live version would do.
+    window.setTimeout(() => {
+      const matched = matchCategory(text);
+      setCategory(matched);
+      setStatus(matched ? "results" : "no-match");
+    }, 900);
+  }
+
+  const handleSearch = () => runSearch(brief);
+  const handleExample = (example: string) => runSearch(example);
 
   const handleNewSearch = () => {
     setBrief("");
-    setHasResults(false);
+    setCategory(null);
+    setStatus("idle");
   };
+
+  const showForm = status === "idle" || status === "no-match";
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <Header />
 
-      {!hasResults ? (
+      {showForm && (
         <main className="px-6 pb-24 pt-20 sm:px-8 md:px-12 md:pb-32 md:pt-28 lg:px-16">
           <div className="mx-auto max-w-[1100px]">
             <div className="mx-auto max-w-3xl text-center">
@@ -95,15 +101,33 @@ export default function Research() {
                 Sift research
               </p>
 
-              <h1 className="mt-5 text-5xl font-semibold leading-[0.92] tracking-[-0.06em] md:text-7xl">
-                What are you trying to find?
-              </h1>
+              {status === "no-match" ? (
+                <>
+                  <h1 className="mt-5 text-4xl font-semibold leading-[0.95] tracking-[-0.05em] md:text-6xl">
+                    This demo doesn't cover that yet.
+                  </h1>
 
-              <p className="mx-auto mt-7 max-w-xl text-sm leading-7 text-[var(--muted)] md:text-base">
-                Describe what you need in your own words. Include your budget,
-                how you will use it, and anything you care about. Sift uses AI
-                to turn your description into research criteria.
-              </p>
+                  <p className="mx-auto mt-7 max-w-xl text-sm leading-7 text-[var(--muted)] md:text-base">
+                    Sift's demo catalogue currently covers four categories —
+                    jewelry, headphones, furniture, and running shoes. Try
+                    editing your brief to mention one of those, or start from
+                    an example below.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h1 className="mt-5 text-5xl font-semibold leading-[0.92] tracking-[-0.06em] md:text-7xl">
+                    What are you trying to find?
+                  </h1>
+
+                  <p className="mx-auto mt-7 max-w-xl text-sm leading-7 text-[var(--muted)] md:text-base">
+                    Describe what you need in your own words. Include your
+                    budget, how you will use it, and anything you care about.
+                    Sift uses AI to turn your description into research
+                    criteria.
+                  </p>
+                </>
+              )}
             </div>
 
             <div className="mx-auto mt-14 max-w-4xl rounded-[32px] bg-[var(--surface)] p-3 shadow-2xl shadow-black/20 md:mt-16">
@@ -124,7 +148,12 @@ export default function Research() {
                   />
                 </div>
 
+                <label htmlFor="research-brief" className="sr-only">
+                  Your brief
+                </label>
+
                 <textarea
+                  id="research-brief"
                   value={brief}
                   onChange={(event) => setBrief(event.target.value)}
                   rows={8}
@@ -134,8 +163,8 @@ export default function Research() {
 
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-xs text-[var(--subtle)]">
-                    AI will interpret your request and build the research around
-                    it.
+                    AI will interpret your request and build the research
+                    around it.
                   </p>
 
                   <button
@@ -191,7 +220,27 @@ export default function Research() {
             </div>
           </div>
         </main>
-      ) : (
+      )}
+
+      {status === "loading" && (
+        <main className="px-6 py-32 sm:px-8 md:px-12 lg:px-16">
+          <div
+            role="status"
+            className="mx-auto flex max-w-xl flex-col items-center text-center"
+          >
+            <div
+              aria-hidden="true"
+              className="mb-6 h-11 w-11 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--accent)]"
+            />
+
+            <p className="text-sm text-[var(--muted)]">
+              Reading your brief and building your shortlist…
+            </p>
+          </div>
+        </main>
+      )}
+
+      {status === "results" && category && (
         <main className="px-6 pb-24 pt-16 sm:px-8 md:px-12 md:pb-32 md:pt-20 lg:px-16">
           <div className="mx-auto max-w-[1280px]">
             <button
@@ -229,7 +278,7 @@ export default function Research() {
                   </div>
 
                   <div className="mt-4 space-y-2">
-                    {criteria.map((criterion) => (
+                    {category.criteria.map((criterion) => (
                       <div
                         key={criterion.label}
                         className="rounded-2xl bg-[var(--surface)] px-4 py-3"
@@ -254,90 +303,100 @@ export default function Research() {
                   </p>
 
                   <h1 className="mt-4 text-4xl font-semibold leading-[0.95] tracking-[-0.05em] md:text-6xl">
-                    Three products worth considering.
+                    Your shortlist, explained.
                   </h1>
 
                   <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--muted)]">
-                    These are ranked around the things you said matter, not
-                    simply by popularity or price.
+                    Ranked and reasoned around what you told us — not simply
+                    by popularity or price. Each product gets a plain
+                    verdict: buy it, consider it, or skip it.
                   </p>
                 </div>
 
                 <div className="space-y-4">
-                  {results.map((product, index) => (
+                  {category.results.map((product) => (
                     <article
                       key={product.name}
-                      className={`rounded-[28px] p-6 md:p-8 ${
-                        index === 0
-                          ? "bg-[var(--accent)] text-[#101110]"
-                          : "bg-[var(--surface)]"
+                      className={`rounded-[28px] border-l-4 bg-[var(--surface)] p-6 md:p-8 ${
+                        verdictBorder[product.verdict]
                       }`}
                     >
-                      <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+                      <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
                         <div className="flex gap-5">
-                          <span
-                            className={`pt-1 text-xs font-medium ${
-                              index === 0
-                                ? "text-[#101110]/50"
-                                : "text-[var(--subtle)]"
-                            }`}
-                          >
+                          <span className="pt-1 text-xs font-medium text-[var(--subtle)]">
                             {product.rank}
                           </span>
 
                           <div>
-                            <p
-                              className={`text-xs ${
-                                index === 0
-                                  ? "text-[#101110]/60"
-                                  : "text-[var(--subtle)]"
-                              }`}
-                            >
+                            <p className="text-xs text-[var(--subtle)]">
                               {product.category}
                             </p>
 
                             <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em]">
                               {product.name}
                             </h2>
-
-                            <p
-                              className={`mt-4 max-w-xl text-sm leading-7 ${
-                                index === 0
-                                  ? "text-[#101110]/70"
-                                  : "text-[var(--muted)]"
-                              }`}
-                            >
-                              {product.reason}
-                            </p>
                           </div>
                         </div>
 
-                        <div className="shrink-0 md:text-right">
+                        <div className="flex shrink-0 items-center gap-3 md:flex-col md:items-end md:gap-2">
+                          <span
+                            className={`inline-flex rounded-full px-3 py-1.5 text-xs font-bold ${
+                              verdictBadge[product.verdict]
+                            }`}
+                          >
+                            {product.verdict}
+                          </span>
+
                           <p className="text-xl font-semibold">
                             {product.price}
                           </p>
-
-                          <span
-                            className={`mt-2 inline-flex rounded-full px-3 py-1.5 text-xs font-semibold ${
-                              index === 0
-                                ? "bg-[#101110]/10"
-                                : "bg-[var(--surface-light)]"
-                            }`}
-                          >
-                            {product.match} match
-                          </span>
                         </div>
                       </div>
 
-                      <div
-                        className={`mt-7 flex items-start gap-2 border-t pt-5 text-xs ${
-                          index === 0
-                            ? "border-[#101110]/10 text-[#101110]/60"
-                            : "border-[var(--border)] text-[var(--subtle)]"
-                        }`}
-                      >
-                        <span className="font-semibold">Trade-off:</span>
-                        <span>{product.tradeoff}</span>
+                      <div className="mt-7 grid gap-6 sm:grid-cols-2">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent)]">
+                            Why it fits
+                          </p>
+
+                          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                            {product.whyItFits}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--subtle)]">
+                            Where it falls short
+                          </p>
+
+                          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                            {product.whereItFallsShort}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 rounded-2xl border border-[var(--border)] p-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--subtle)]">
+                          What would change this
+                        </p>
+
+                        <p className="mt-1.5 text-sm leading-6 text-[var(--muted)]">
+                          {product.whatWouldChangeThis}
+                        </p>
+                      </div>
+
+                      <div className="mt-5 flex flex-wrap gap-2">
+                        {product.specs.map((spec) => (
+                          <span
+                            key={spec.label}
+                            className="rounded-full bg-[var(--surface-light)] px-3 py-1.5 text-xs text-[var(--muted)]"
+                          >
+                            <span className="text-[var(--subtle)]">
+                              {spec.label}:
+                            </span>{" "}
+                            {spec.value}
+                          </span>
+                        ))}
                       </div>
                     </article>
                   ))}
@@ -346,7 +405,7 @@ export default function Research() {
                 <div className="mt-10 rounded-[28px] bg-[var(--surface)] p-6 md:p-8">
                   <div className="flex items-start gap-4">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--surface-light)] text-[var(--accent)]">
-                      <Check size={17} aria-hidden="true" />
+                      <Sparkles size={17} aria-hidden="true" />
                     </div>
 
                     <div>
@@ -355,10 +414,7 @@ export default function Research() {
                       </h3>
 
                       <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--muted)]">
-                        The solid gold option is the closest match because
-                        durability is important and it stays close to your
-                        budget. Vermeil gives you a meaningful price saving if
-                        you are willing to accept more maintenance.
+                        {category.takeaway}
                       </p>
                     </div>
                   </div>
