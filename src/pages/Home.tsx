@@ -6,7 +6,6 @@ import {
   CircleHelp,
   Search,
   SlidersHorizontal,
-  Sparkles,
 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
@@ -100,11 +99,6 @@ export default function Home() {
           <div className="mx-auto grid max-w-[1320px] gap-16 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-24">
             <div>
               <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-[var(--surface)] px-3.5 py-2 text-xs text-[var(--muted)]">
-                <Sparkles
-                  size={13}
-                  className="text-[var(--accent)]"
-                  aria-hidden="true"
-                />
                 AI research for better buying decisions
               </div>
 
