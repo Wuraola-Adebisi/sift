@@ -1,39 +1,41 @@
-import { Link } from 'react-router-dom'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
+import { Link } from "react-router-dom";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const sections = [
   {
-    title: 'Information you provide',
-    body: 'When you use Sift, you may provide information such as product requests, preferences, budgets, constraints, and other text you choose to submit. We use this information to provide the research experience.',
+    title: "Information you provide",
+    body: "When you use Sift, you may provide information such as product requests, preferences, budgets, constraints, and other text you choose to submit. We use this information to provide the research experience.",
   },
   {
-    title: 'Research requests',
-    body: 'Your research requests may be processed by AI systems and other service providers that help Sift understand your request, conduct research, compare information, and generate results.',
+    title: "Research requests",
+    body: "Your research requests may be processed by AI systems and other service providers that help Sift understand your request, conduct research, compare information, and generate results.",
   },
   {
-    title: 'Usage information',
-    body: 'We may collect technical and usage information about how you interact with Sift, such as pages visited, features used, device information, and basic diagnostic information. This helps us operate and improve the service.',
+    title: "Usage information",
+    body: "We may collect technical and usage information about how you interact with Sift, such as pages visited, features used, device information, and basic diagnostic information. This helps us operate and improve the service.",
   },
   {
-    title: 'AI processing',
-    body: 'Sift uses artificial intelligence to interpret requests, extract relevant criteria, synthesise information, and generate explanations. AI-generated results can contain mistakes and should be independently verified before making significant purchasing decisions.',
+    title: "AI processing",
+    body: "Sift uses artificial intelligence to interpret requests, extract relevant criteria, synthesise information, and generate explanations. AI-generated results can contain mistakes and should be independently verified before making significant purchasing decisions.",
   },
   {
-    title: 'Third-party services',
-    body: 'Sift may rely on third-party infrastructure, AI providers, analytics services, product data sources, and other vendors. Information may be processed by these providers as necessary to provide the service.',
+    title: "Third-party services",
+    body: "Sift may rely on third-party infrastructure, AI providers, analytics services, product data sources, and other vendors. Information may be processed by these providers as necessary to provide the service.",
   },
   {
-    title: 'Data retention',
-    body: 'We retain information only for as long as reasonably necessary to provide, maintain, secure, and improve Sift, comply with legal obligations, and resolve disputes.',
+    title: "Data retention",
+    body: "We retain information only for as long as reasonably necessary to provide, maintain, secure, and improve Sift, comply with legal obligations, and resolve disputes.",
   },
   {
-    title: 'Your choices',
-    body: 'Depending on the information we hold and applicable law, you may have rights to access, correct, delete, or otherwise control certain personal information. You can contact us about privacy-related requests.',
+    title: "Your choices",
+    body: "Depending on the information we hold and applicable law, you may have rights to access, correct, delete, or otherwise control certain personal information. You can contact us about privacy-related requests.",
   },
-]
+];
 
 export default function Privacy() {
+  usePageTitle("Privacy — Sift");
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <Header />
@@ -57,9 +59,9 @@ export default function Privacy() {
               <p className="text-sm leading-7 text-[var(--muted)]">
                 This privacy policy explains how Sift may collect, use, and
                 handle information when you use the service. This is an MVP
-                policy and should be reviewed and adapted to the final
-                company's legal structure, jurisdiction, vendors, and data
-                practices before public launch.
+                policy and should be reviewed and adapted to the final company's
+                legal structure, jurisdiction, vendors, and data practices
+                before public launch.
               </p>
             </div>
 
@@ -89,5 +91,5 @@ export default function Privacy() {
 
       <Footer />
     </div>
-  )
+  );
 }

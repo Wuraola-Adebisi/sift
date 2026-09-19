@@ -11,6 +11,7 @@ import {
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const stages = [
   {
@@ -75,6 +76,8 @@ const briefCriteria = [
 ];
 
 export default function HowItWorks() {
+  usePageTitle("How it works — Sift");
+
   const [activeStage, setActiveStage] = useState("understand");
 
   const active = stages.find((stage) => stage.id === activeStage) ?? stages[0];

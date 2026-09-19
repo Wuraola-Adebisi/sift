@@ -16,6 +16,7 @@ import {
   type ResearchCategory,
   type Verdict,
 } from "../data/researchCatalog";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const examples = categories.map((category) => category.exampleBrief);
 
@@ -34,6 +35,7 @@ const verdictBorder: Record<Verdict, string> = {
 };
 
 export default function Research() {
+  usePageTitle("Research — Sift");
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -110,8 +112,8 @@ export default function Research() {
                   <p className="mx-auto mt-7 max-w-xl text-sm leading-7 text-[var(--muted)] md:text-base">
                     Sift's demo catalogue currently covers four categories —
                     jewelry, headphones, furniture, and running shoes. Try
-                    editing your brief to mention one of those, or start from
-                    an example below.
+                    editing your brief to mention one of those, or start from an
+                    example below.
                   </p>
                 </>
               ) : (
@@ -163,8 +165,8 @@ export default function Research() {
 
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-xs text-[var(--subtle)]">
-                    AI will interpret your request and build the research
-                    around it.
+                    AI will interpret your request and build the research around
+                    it.
                   </p>
 
                   <button
@@ -307,9 +309,9 @@ export default function Research() {
                   </h1>
 
                   <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--muted)]">
-                    Ranked and reasoned around what you told us — not simply
-                    by popularity or price. Each product gets a plain
-                    verdict: buy it, consider it, or skip it.
+                    Ranked and reasoned around what you told us — not simply by
+                    popularity or price. Each product gets a plain verdict: buy
+                    it, consider it, or skip it.
                   </p>
                 </div>
 

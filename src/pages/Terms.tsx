@@ -1,43 +1,45 @@
-import { Link } from 'react-router-dom'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
+import { Link } from "react-router-dom";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const sections = [
   {
-    title: 'Using Sift',
-    body: 'Sift provides research and decision-support tools for people evaluating products and purchases. You agree to use the service lawfully and not to interfere with its operation or attempt to access systems or data you are not authorised to access.',
+    title: "Using Sift",
+    body: "Sift provides research and decision-support tools for people evaluating products and purchases. You agree to use the service lawfully and not to interfere with its operation or attempt to access systems or data you are not authorised to access.",
   },
   {
-    title: 'AI-generated information',
-    body: 'Sift uses AI to interpret requests and generate research, comparisons, recommendations, and explanations. AI-generated information may be incomplete, outdated, or incorrect. You should verify important product specifications, pricing, availability, safety information, warranties, and other material claims before purchasing.',
+    title: "AI-generated information",
+    body: "Sift uses AI to interpret requests and generate research, comparisons, recommendations, and explanations. AI-generated information may be incomplete, outdated, or incorrect. You should verify important product specifications, pricing, availability, safety information, warranties, and other material claims before purchasing.",
   },
   {
-    title: 'Not professional advice',
-    body: 'Sift is a general research and decision-support service. Its results are not professional financial, medical, legal, safety, or other specialist advice. Where a purchase involves significant health, safety, financial, or legal consequences, consult an appropriately qualified professional.',
+    title: "Not professional advice",
+    body: "Sift is a general research and decision-support service. Its results are not professional financial, medical, legal, safety, or other specialist advice. Where a purchase involves significant health, safety, financial, or legal consequences, consult an appropriately qualified professional.",
   },
   {
-    title: 'Product information',
-    body: 'Prices, availability, specifications, policies, and other product information can change. Sift does not guarantee that information displayed by the service will always be current or accurate.',
+    title: "Product information",
+    body: "Prices, availability, specifications, policies, and other product information can change. Sift does not guarantee that information displayed by the service will always be current or accurate.",
   },
   {
-    title: 'Third-party products and services',
-    body: 'Sift may reference products, retailers, brands, websites, or other third-party services. Sift is not responsible for the policies, availability, performance, or conduct of third parties unless expressly stated otherwise.',
+    title: "Third-party products and services",
+    body: "Sift may reference products, retailers, brands, websites, or other third-party services. Sift is not responsible for the policies, availability, performance, or conduct of third parties unless expressly stated otherwise.",
   },
   {
-    title: 'Intellectual property',
-    body: 'The Sift service, including its software, interface, branding, original content, and underlying technology, is owned by or licensed to Sift and may not be copied, modified, distributed, or commercially exploited without permission.',
+    title: "Intellectual property",
+    body: "The Sift service, including its software, interface, branding, original content, and underlying technology, is owned by or licensed to Sift and may not be copied, modified, distributed, or commercially exploited without permission.",
   },
   {
-    title: 'Changes to the service',
-    body: 'We may modify, suspend, or discontinue parts of Sift as the product develops. We may also update these terms from time to time. Continued use of the service after material changes take effect constitutes acceptance of the updated terms where permitted by applicable law.',
+    title: "Changes to the service",
+    body: "We may modify, suspend, or discontinue parts of Sift as the product develops. We may also update these terms from time to time. Continued use of the service after material changes take effect constitutes acceptance of the updated terms where permitted by applicable law.",
   },
   {
-    title: 'Contact',
-    body: 'Questions about these terms can be directed to the contact address provided by Sift.',
+    title: "Contact",
+    body: "Questions about these terms can be directed to the contact address provided by Sift.",
   },
-]
+];
 
 export default function Terms() {
+  usePageTitle("Terms — Sift");
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <Header />
@@ -91,5 +93,5 @@ export default function Terms() {
 
       <Footer />
     </div>
-  )
+  );
 }

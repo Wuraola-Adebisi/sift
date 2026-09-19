@@ -10,197 +10,27 @@ import {
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { categories, type Verdict } from "../data/researchCatalog";
+import { usePageTitle } from "../hooks/usePageTitle";
 
-const examples = [
-  {
-    id: "jewelry",
-    category: "Jewelry",
-    label: "Everyday necklace",
-    brief:
-      "I need a gold necklace for everyday wear. Something simple but not boring. Around $300. I want it to hold up well.",
-    criteria: [
-      ["Use case", "Everyday wear"],
-      ["Budget", "Around $300"],
-      ["Priority", "Durability"],
-      ["Style", "Simple but distinctive"],
-    ],
-    products: [
-      {
-        rank: "01",
-        name: "14k Solid Gold Pendant",
-        price: "$295",
-        match: "95%",
-        reason:
-          "Fits the budget closely, works for everyday wear, and solid gold makes durability a stronger point.",
-        tradeoff:
-          "Usually offers less visual variety at this price than plated alternatives.",
-      },
-      {
-        rank: "02",
-        name: "Gold Vermeil Chain",
-        price: "$185",
-        match: "89%",
-        reason:
-          "Gives you the gold look at a lower price while keeping the design simple.",
-        tradeoff:
-          "The finish can wear over time, particularly with frequent exposure to water and products.",
-      },
-      {
-        rank: "03",
-        name: "Gold-Plated Pendant",
-        price: "$95",
-        match: "77%",
-        reason:
-          "Leaves substantial room in the budget and offers a wide range of styles.",
-        tradeoff: "Less durable for the everyday-wear requirement.",
-      },
-    ],
-    conclusion:
-      "The solid gold option is the closest match because durability was an important part of the brief, while the vermeil option gives you a meaningful price saving if you are willing to accept more maintenance.",
-  },
-  {
-    id: "headphones",
-    category: "Headphones",
-    label: "Daily commute",
-    brief:
-      "I need headphones for commuting. Good noise cancellation matters. Under $400. I don't care about gaming.",
-    criteria: [
-      ["Use case", "Daily commuting"],
-      ["Budget", "Under $400"],
-      ["Priority", "Noise cancellation"],
-      ["Secondary", "Comfort"],
-    ],
-    products: [
-      {
-        rank: "01",
-        name: "Sony WH-1000XM6",
-        price: "$399",
-        match: "94%",
-        reason:
-          "Strong noise cancellation, comfortable for long commutes, and right at the stated budget.",
-        tradeoff:
-          "Microphone performance is not its strongest area for frequent calls.",
-      },
-      {
-        rank: "02",
-        name: "Bose QuietComfort Ultra",
-        price: "$349",
-        match: "89%",
-        reason:
-          "Excellent noise cancellation and a comfortable fit with room left in the budget.",
-        tradeoff: "Shorter battery life than the Sony option.",
-      },
-      {
-        rank: "03",
-        name: "AirPods Max",
-        price: "$549",
-        match: "81%",
-        reason:
-          "Excellent transparency mode and particularly useful for Apple-heavy setups.",
-        tradeoff:
-          "Over budget and significantly heavier than the alternatives.",
-      },
-    ],
-    conclusion:
-      "The Sony is the closest overall match because it satisfies the main requirement without exceeding the budget. Bose becomes more compelling if comfort is the deciding factor.",
-  },
-  {
-    id: "furniture",
-    category: "Furniture",
-    label: "Small living room",
-    brief:
-      "I need a sofa for a small living room. Neutral colour, comfortable, easy to clean, and under $1,500.",
-    criteria: [
-      ["Use case", "Small living room"],
-      ["Budget", "Under $1,500"],
-      ["Priority", "Easy maintenance"],
-      ["Secondary", "Comfort"],
-    ],
-    products: [
-      {
-        rank: "01",
-        name: "Performance Fabric Sofa",
-        price: "$1,299",
-        match: "94%",
-        reason:
-          "A compact profile with durable, easy-clean upholstery and enough cushioning for everyday use.",
-        tradeoff:
-          "Less choice in fabric colours than some fashion-led furniture brands.",
-      },
-      {
-        rank: "02",
-        name: "Compact Modular Sofa",
-        price: "$1,399",
-        match: "90%",
-        reason:
-          "Flexible configuration makes it easier to work around a smaller room.",
-        tradeoff: "Modular construction can mean more visible seams.",
-      },
-      {
-        rank: "03",
-        name: "Linen Sofa",
-        price: "$1,099",
-        match: "82%",
-        reason: "Strong aesthetic fit with a neutral palette and lower price.",
-        tradeoff:
-          "Linen generally requires more care than performance upholstery.",
-      },
-    ],
-    conclusion:
-      "The performance-fabric sofa fits the brief most closely because easy maintenance was more important than achieving a particular material or aesthetic.",
-  },
-  {
-    id: "laptops",
-    category: "Laptops",
-    label: "Frontend development",
-    brief:
-      "I need a laptop for frontend development. Around $1,200. Battery life matters more than gaming. I want something I can comfortably carry around.",
-    criteria: [
-      ["Use case", "Frontend development"],
-      ["Budget", "Around $1,200"],
-      ["Priority", "Battery life"],
-      ["Secondary", "Portability"],
-    ],
-    products: [
-      {
-        rank: "01",
-        name: 'MacBook Air 15"',
-        price: "$1,199",
-        match: "95%",
-        reason:
-          "Strong battery life, excellent performance for frontend work, and a large display without excessive weight.",
-        tradeoff: "Limited ports may require a hub depending on your setup.",
-      },
-      {
-        rank: "02",
-        name: "Dell XPS 13",
-        price: "$999",
-        match: "89%",
-        reason:
-          "Compact, capable, and comfortably below the budget while covering development needs.",
-        tradeoff: "Smaller display makes extended work less comfortable.",
-      },
-      {
-        rank: "03",
-        name: "Lenovo Yoga 7i",
-        price: "$899",
-        match: "84%",
-        reason:
-          "Good value with a flexible form factor and enough performance for web development.",
-        tradeoff:
-          "Display and build quality are a step below the more expensive options.",
-      },
-    ],
-    conclusion:
-      "The MacBook Air fits the brief most closely because battery life, portability, and development performance all score highly without requiring a gaming-oriented machine.",
-  },
-];
+const verdictBadge: Record<Verdict, string> = {
+  Buy: "bg-[var(--accent)] text-[#101110]",
+  Consider: "bg-[#f5c945] text-[#101110]",
+  Skip: "bg-[#f2795c]/15 text-[#f2795c]",
+};
+
+const verdictBorder: Record<Verdict, string> = {
+  Buy: "border-l-[var(--accent)]",
+  Consider: "border-l-[#f5c945]",
+  Skip: "border-l-[#f2795c]",
+};
 
 export default function Examples() {
-  const [activeId, setActiveId] = useState("jewelry");
+  usePageTitle("Examples — Sift");
+  const [activeId, setActiveId] = useState(categories[0].id);
 
   const active =
-    examples.find((example) => example.id === activeId) ?? examples[0];
+    categories.find((category) => category.id === activeId) ?? categories[0];
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
@@ -237,19 +67,19 @@ export default function Examples() {
               </p>
 
               <p className="text-xs text-[var(--subtle)]">
-                {examples.length} examples
+                {categories.length} examples
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {examples.map((example, index) => {
-                const isActive = example.id === activeId;
+              {categories.map((category, index) => {
+                const isActive = category.id === activeId;
 
                 return (
                   <button
-                    key={example.id}
+                    key={category.id}
                     type="button"
-                    onClick={() => setActiveId(example.id)}
+                    onClick={() => setActiveId(category.id)}
                     className={`min-h-[150px] rounded-[24px] p-6 text-left transition ${
                       isActive
                         ? "bg-[var(--accent)] text-[#101110]"
@@ -277,9 +107,7 @@ export default function Examples() {
                     </div>
 
                     <div className="mt-12">
-                      <p className="text-sm font-semibold">
-                        {example.category}
-                      </p>
+                      <p className="text-sm font-semibold">{category.name}</p>
 
                       <p
                         className={`mt-1 text-xs ${
@@ -288,7 +116,7 @@ export default function Examples() {
                             : "text-[var(--subtle)]"
                         }`}
                       >
-                        {example.label}
+                        {category.tagline}
                       </p>
                     </div>
                   </button>
@@ -308,26 +136,26 @@ export default function Examples() {
                   </p>
 
                   <h2 className="mt-4 text-3xl font-semibold leading-[0.95] tracking-[-0.04em]">
-                    {active.category}
+                    {active.name}
                   </h2>
 
                   <div className="mt-8 rounded-[24px] bg-[var(--background)] p-6">
                     <p className="text-sm leading-7 text-[var(--muted)]">
-                      “{active.brief}”
+                      “{active.exampleBrief}”
                     </p>
                   </div>
 
                   <div className="mt-8 space-y-2">
-                    {active.criteria.map(([label, value]) => (
+                    {active.criteria.map((criterion) => (
                       <div
-                        key={label}
+                        key={criterion.label}
                         className="rounded-[18px] bg-[var(--background)] px-4 py-3.5"
                       >
                         <p className="text-[10px] uppercase tracking-[0.12em] text-[var(--subtle)]">
-                          {label}
+                          {criterion.label}
                         </p>
 
-                        <p className="mt-1 text-sm">{value}</p>
+                        <p className="mt-1 text-sm">{criterion.value}</p>
                       </div>
                     ))}
                   </div>
@@ -352,25 +180,17 @@ export default function Examples() {
                   </p>
                 </div>
 
-                <div className="space-y-3">
-                  {active.products.map((product, index) => (
+                <div className="space-y-4">
+                  {active.results.map((product) => (
                     <article
                       key={product.name}
-                      className={`rounded-[28px] p-6 md:p-8 ${
-                        index === 0
-                          ? "bg-[var(--accent)] text-[#101110]"
-                          : "bg-[var(--background)]"
+                      className={`rounded-[28px] border-l-4 bg-[var(--background)] p-6 md:p-8 ${
+                        verdictBorder[product.verdict]
                       }`}
                     >
-                      <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+                      <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
                         <div className="flex gap-5">
-                          <span
-                            className={`pt-1 text-xs ${
-                              index === 0
-                                ? "text-[#101110]/50"
-                                : "text-[var(--subtle)]"
-                            }`}
-                          >
+                          <span className="pt-1 text-xs text-[var(--subtle)]">
                             {product.rank}
                           </span>
 
@@ -378,53 +198,68 @@ export default function Examples() {
                             <h3 className="text-xl font-semibold tracking-[-0.03em] md:text-2xl">
                               {product.name}
                             </h3>
-
-                            <p
-                              className={`mt-3 max-w-2xl text-sm leading-7 ${
-                                index === 0
-                                  ? "text-[#101110]/70"
-                                  : "text-[var(--muted)]"
-                              }`}
-                            >
-                              {product.reason}
-                            </p>
                           </div>
                         </div>
 
-                        <div className="shrink-0 md:text-right">
+                        <div className="flex shrink-0 items-center gap-3 md:flex-col md:items-end md:gap-2">
+                          <span
+                            className={`inline-flex rounded-full px-3 py-1.5 text-xs font-bold ${
+                              verdictBadge[product.verdict]
+                            }`}
+                          >
+                            {product.verdict}
+                          </span>
+
                           <p className="text-xl font-semibold">
                             {product.price}
                           </p>
-
-                          <span
-                            className={`mt-2 inline-flex rounded-full px-3 py-1.5 text-xs font-semibold ${
-                              index === 0
-                                ? "bg-[#101110]/10"
-                                : "bg-[var(--surface)]"
-                            }`}
-                          >
-                            {product.match} match
-                          </span>
                         </div>
                       </div>
 
-                      <div
-                        className={`mt-7 border-t pt-5 ${
-                          index === 0
-                            ? "border-[#101110]/10"
-                            : "border-[var(--border)]"
-                        }`}
-                      >
-                        <p
-                          className={`text-xs leading-6 ${
-                            index === 0
-                              ? "text-[#101110]/60"
-                              : "text-[var(--subtle)]"
-                          }`}
-                        >
-                          <span className="font-semibold">Trade-off:</span>{" "}
-                          {product.tradeoff}
+                      <div className="mt-7 grid gap-6 sm:grid-cols-2">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent)]">
+                            Why it fits
+                          </p>
+
+                          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                            {product.whyItFits}
+                          </p>
+                        </div>
+
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--subtle)]">
+                            Where it falls short
+                          </p>
+
+                          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                            {product.whereItFallsShort}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 rounded-2xl border border-[var(--border)] p-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--subtle)]">
+                          What would change this
                         </p>
+
+                        <p className="mt-1.5 text-sm leading-6 text-[var(--muted)]">
+                          {product.whatWouldChangeThis}
+                        </p>
+                      </div>
+
+                      <div className="mt-5 flex flex-wrap gap-2">
+                        {product.specs.map((spec) => (
+                          <span
+                            key={spec.label}
+                            className="rounded-full bg-[var(--surface)] px-3 py-1.5 text-xs text-[var(--muted)]"
+                          >
+                            <span className="text-[var(--subtle)]">
+                              {spec.label}:
+                            </span>{" "}
+                            {spec.value}
+                          </span>
+                        ))}
                       </div>
                     </article>
                   ))}
@@ -442,7 +277,7 @@ export default function Examples() {
                       </p>
 
                       <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)]">
-                        {active.conclusion}
+                        {active.takeaway}
                       </p>
                     </div>
                   </div>

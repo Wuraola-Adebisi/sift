@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState } from "react";
 import {
   ArrowRight,
   Check,
@@ -6,89 +6,97 @@ import {
   CircleHelp,
   Search,
   SlidersHorizontal,
-} from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
-import { categories as researchCategories, type Verdict } from '../data/researchCatalog'
+  Sparkles,
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import {
+  categories as researchCategories,
+  type Verdict,
+} from "../data/researchCatalog";
+import { usePageTitle } from "../hooks/usePageTitle";
 
-const headphonesCategory = researchCategories.find((c) => c.id === 'headphones')!
-const teaserProducts = headphonesCategory.results
+const headphonesCategory = researchCategories.find(
+  (c) => c.id === "headphones",
+)!;
+const teaserProducts = headphonesCategory.results;
 
 const verdictBadge: Record<Verdict, string> = {
-  Buy: 'bg-[#101110]/10',
-  Consider: 'bg-[#f5c945]/90 text-[#101110]',
-  Skip: 'bg-[var(--surface-light)] text-[var(--subtle)]',
-}
+  Buy: "bg-[#101110]/10",
+  Consider: "bg-[#f5c945]/90 text-[#101110]",
+  Skip: "bg-[var(--surface-light)] text-[var(--subtle)]",
+};
 
 const categoryChips = [
-  'Jewelry',
-  'Skincare',
-  'Furniture',
-  'Electronics',
-  'Fashion',
-  'Fitness',
-]
+  "Jewelry",
+  "Skincare",
+  "Furniture",
+  "Electronics",
+  "Fashion",
+  "Fitness",
+];
 
 const researchPoints = [
   {
-    number: '01',
-    title: 'Understands the brief',
+    number: "01",
+    title: "Understands the brief",
     description:
-      'Sift uses AI to turn a messy shopping request into the things that actually matter: budget, priorities, constraints, preferences, and use case.',
+      "Sift uses AI to turn a messy shopping request into the things that actually matter: budget, priorities, constraints, preferences, and use case.",
     icon: CircleHelp,
   },
   {
-    number: '02',
-    title: 'Cuts through the options',
+    number: "02",
+    title: "Cuts through the options",
     description:
-      'Instead of handing you twenty tabs, Sift researches the field and narrows it to a small set of options worth your attention.',
+      "Instead of handing you twenty tabs, Sift researches the field and narrows it to a small set of options worth your attention.",
     icon: SlidersHorizontal,
   },
   {
-    number: '03',
-    title: 'Explains the trade-offs',
+    number: "03",
+    title: "Explains the trade-offs",
     description:
-      'AI synthesises the research around your brief and explains what fits, what does not, and what you are giving up with each choice.',
+      "AI synthesises the research around your brief and explains what fits, what does not, and what you are giving up with each choice.",
     icon: Check,
   },
-]
+];
 
 const comparisonRows = [
   {
-    label: 'Noise cancellation',
-    sony: 'Excellent',
-    bose: 'Excellent',
-    airpods: 'Very good',
+    label: "Noise cancellation",
+    sony: "Excellent",
+    bose: "Excellent",
+    airpods: "Very good",
   },
   {
-    label: 'Battery',
-    sony: 'Up to 30h',
-    bose: 'Up to 24h',
-    airpods: 'Up to 20h',
+    label: "Battery",
+    sony: "Up to 30h",
+    bose: "Up to 24h",
+    airpods: "Up to 20h",
   },
   {
-    label: 'Weight',
-    sony: '254g',
-    bose: '252g',
-    airpods: '384g',
+    label: "Weight",
+    sony: "254g",
+    bose: "252g",
+    airpods: "384g",
   },
   {
-    label: 'Your budget',
-    sony: 'Fits',
-    bose: 'Fits',
-    airpods: 'Over',
+    label: "Your budget",
+    sony: "Fits",
+    bose: "Fits",
+    airpods: "Over",
   },
-]
+];
 
 export default function Home() {
-  const [brief, setBrief] = useState('')
-  const navigate = useNavigate()
+  usePageTitle("Sift — AI research for better buying decisions");
+  const [brief, setBrief] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = () => {
-    if (!brief.trim()) return
-    navigate('/research', { state: { brief } })
-  }
+    if (!brief.trim()) return;
+    navigate("/research", { state: { brief } });
+  };
 
   return (
     <div className="min-h-screen overflow-hidden bg-[var(--background)]">
@@ -99,6 +107,11 @@ export default function Home() {
           <div className="mx-auto grid max-w-[1320px] gap-16 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-24">
             <div>
               <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-[var(--surface)] px-3.5 py-2 text-xs text-[var(--muted)]">
+                <Sparkles
+                  size={13}
+                  className="text-[var(--accent)]"
+                  aria-hidden="true"
+                />
                 AI research for better buying decisions
               </div>
 
@@ -169,7 +182,6 @@ export default function Home() {
                     className="group mt-4 flex w-full items-center justify-between rounded-2xl bg-[var(--accent)] px-5 py-4 text-sm font-bold text-[#101110] transition hover:bg-[var(--accent-dark)] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Find my shortlist
-
                     <ArrowRight
                       size={17}
                       aria-hidden="true"
@@ -216,16 +228,16 @@ export default function Home() {
                   key={product.name}
                   className={`min-h-[380px] rounded-[28px] p-7 md:p-8 ${
                     index === 0
-                      ? 'bg-[var(--accent)] text-[#101110]'
-                      : 'bg-[var(--surface)]'
+                      ? "bg-[var(--accent)] text-[#101110]"
+                      : "bg-[var(--surface)]"
                   }`}
                 >
                   <div className="flex items-start justify-between">
                     <span
                       className={`text-xs ${
                         index === 0
-                          ? 'text-[#101110]/60'
-                          : 'text-[var(--subtle)]'
+                          ? "text-[#101110]/60"
+                          : "text-[var(--subtle)]"
                       }`}
                     >
                       {product.rank}
@@ -244,8 +256,8 @@ export default function Home() {
                     <p
                       className={`text-xs ${
                         index === 0
-                          ? 'text-[#101110]/60'
-                          : 'text-[var(--subtle)]'
+                          ? "text-[#101110]/60"
+                          : "text-[var(--subtle)]"
                       }`}
                     >
                       {product.category}
@@ -263,8 +275,8 @@ export default function Home() {
                       <span
                         className={`text-xs ${
                           index === 0
-                            ? 'text-[#101110]/70'
-                            : 'text-[var(--subtle)]'
+                            ? "text-[#101110]/70"
+                            : "text-[var(--subtle)]"
                         }`}
                       >
                         {product.specs[0]?.label}: {product.specs[0]?.value}
@@ -301,7 +313,7 @@ export default function Home() {
 
               <div className="divide-y divide-[var(--border)]">
                 {researchPoints.map((point) => {
-                  const Icon = point.icon
+                  const Icon = point.icon;
 
                   return (
                     <div
@@ -326,7 +338,7 @@ export default function Home() {
                         <Icon size={18} aria-hidden="true" />
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -346,8 +358,8 @@ export default function Home() {
 
               <p className="mt-7 max-w-xl text-sm leading-7 text-[var(--muted)] md:text-base">
                 AI helps Sift connect product information back to your
-                priorities, so you can see the differences that actually
-                matter to your decision.
+                priorities, so you can see the differences that actually matter
+                to your decision.
               </p>
             </div>
 
@@ -408,7 +420,6 @@ export default function Home() {
                     className="group mt-9 inline-flex items-center gap-2 rounded-full bg-[#101110] px-5 py-3.5 text-sm font-semibold text-[var(--accent)] transition hover:scale-[1.02]"
                   >
                     Try Sift
-
                     <ArrowRight
                       size={16}
                       aria-hidden="true"
@@ -441,7 +452,6 @@ export default function Home() {
               className="group mx-auto mt-9 inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-6 py-4 text-sm font-bold text-[#101110] transition hover:bg-[var(--accent-dark)]"
             >
               Start with a search
-
               <ArrowRight
                 size={17}
                 aria-hidden="true"
@@ -454,5 +464,5 @@ export default function Home() {
 
       <Footer />
     </div>
-  )
+  );
 }
